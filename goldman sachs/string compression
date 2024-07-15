@@ -1,1 +1,46 @@
 // code here
+#include <bits/stdc++.h>
+using namespace std;
+void solve()
+{
+    string s;
+    cin >> s;
+    int n = s.length();
+    string p = "";
+    int j = 1;
+    int count = 0;
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+    {
+
+        if (j < n && s[i] == s[j])
+        {
+            count++;
+            j++;
+            i--;
+        }
+        else
+        {
+            p += s[i] + to_string(count + 1);
+            sum += count + 1;
+            count = 0;
+            i = j - 1;
+            j++;
+        }
+        //cout << i << " " << j << endl;
+    }
+   
+    cout << p << endl;
+}
+
+int main()
+{
+    int t;
+    t = 1;
+    while (t--)
+    {
+        solve();
+    }
+    return 0;
+}
+
