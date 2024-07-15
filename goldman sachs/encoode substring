@@ -1,0 +1,40 @@
+
+#include <bits/stdc++.h> 
+using namespace std; 
+string compress(string str) 
+{ 
+	stack<string> st; 
+	int N = str.length(); 
+	int i = 0, j = N / 2; 
+	while (j > 0) { 
+		int mid = j; 
+		for (i = 0; i < mid && str[i] == str[j]; i++, j++) 
+			; 
+		if (i == mid) { 
+			st.push(str.substr(j, N - 1)); 
+			str = str.substr(0, i); 
+			N = mid; 
+			j = N / 2; 
+		} 
+		else { 
+			j = mid - 1; 
+		} 
+	} 
+
+	while (!st.empty()) { 
+		str = str + "*" + st.top(); 
+		st.pop(); 
+	} 
+
+	return str; 
+} 
+
+int main() 
+{ 
+	// Declare and initialize the string 
+	string str ;
+ cin>>str;
+
+	cout << compress(str) << "\n"; 
+	return 0; 
+}
