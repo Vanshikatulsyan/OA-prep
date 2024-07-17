@@ -1,0 +1,120 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct Banner
+{
+    int start;
+    int end;
+    int expire_time;
+
+    // Comparator for priority queue to sort by expire time
+    bool operator<(const Banner &other) const
+    {
+        return expire_time > other.expire_time;
+    }
+};
+
+string determineWinner(string &s, int n, int x)
+{
+    int current_time = 0;
+    bool tina_turn = true; // True if it's Tina's turn, False if it's Samuel's turn
+    priority_queue<Banner> pq;
+    pair<int, int> last_expired{-1, -1}; // Track last expired position
+    int last_expired_time = -1;
+    bool tina_used_last = false;
+    bool samuel_used_last = false;
+
+    while (true)
+    {
+        // Remove expired banners
+        while (!pq.empty() && pq.top().expire_time == current_time)
+        {
+            Banner b = pq.top();
+            pq.pop();
+            // Restore the subarray to zeros
+            for (int i = b.start; i <= b.end; ++i)
+            {
+                s[i] = '0';
+            }
+            last_expired = {b.start, b.end};
+            last_expired_time = current_time; // Update last expired time
+        }
+
+        // Find the first contiguous subarray of 0s of length n
+        bool placed = false;
+        for (int i = 0; i <= s.length() - n; ++i)
+        {
+            bool can_place = true;
+            for (int j = i; j < i + n; ++j)
+            {
+                if (s[j] != '0')
+                {
+                    can_place = false;
+                    break;
+                }
+            }
+            if (can_place)
+            {
+                // Place the banner
+                for (int j = i; j < i + n; ++j)
+                {
+                    s[j] = '1';
+                }
+
+                // Check if the last expired position is used again
+                if (last_expired == make_pair(i, i + n - 1))
+                {
+                    if (tina_turn)
+                    {
+                        if (samuel_used_last)
+                            return "Tie";
+                        tina_used_last = true;
+                    }
+                    else
+                    {
+                        if (tina_used_last)
+                            return "Tie";
+                        samuel_used_last = true;
+                    }
+                }
+                else
+                {
+                    // Reset the flags if different position is used
+                    tina_used_last = false;
+                    samuel_used_last = false;
+                }
+
+                // Push the banner information into the priority queue
+                pq.push({i, i + n - 1, current_time + x});
+                placed = true;
+                break;
+            }
+        }
+
+        if (!placed)
+        {
+            // No valid placement found, current player loses
+            return tina_turn ? "Samuel" : "Tina";
+        }
+
+        // Switch turns
+        tina_turn = !tina_turn;
+        current_time++;
+    }
+
+    return "Tie"; // This line should never be reached under normal conditions
+}
+
+int main()
+{
+    string s;
+    int n, x;
+    cin >> s;
+    cin >> n >> x;
+
+    string result = determineWinner(s, n, x);
+    cout << result << endl;
+
+    return 0;
+}
